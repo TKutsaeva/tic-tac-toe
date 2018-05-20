@@ -1,51 +1,39 @@
 <?php 
+include 'Game_class.php';
 class GameStorage
 {
+
     
+
     
     public function create()
     {
-        $XGamer = $_POST['XGamer'];
-        $OGamer = $_POST['OGamer'];
-        $dir = 'saved_games/';
-        
-        function checkValidNames ($XGamer, $OGamer)
-        {
-            $pattern = '/[a-zA-Zа-пр-яА-ПР-Я_]+/';
-            if (preg_match($pattern, $XGamer) && preg_match($pattern, $OGamer))
-            {
-                return true;
-            }
-        }
-            
-        $checkingValidNames = checkValidNames ($XGamer, $OGamer);
-        if (!empty($XGamer) && !empty($OGamer) && $checkingValidNames)
-        {
-            $timeForName = uniqid();
-            $gamefile = "$timeForName.txt";
-            $newFileInfo = "$XGamer" . PHP_EOL . "$OGamer". PHP_EOL . "";
-            $name1 = fopen($dir.$gamefile, "a+");
-            fputs($name1, $newFileInfo);
-            fclose($name1);
-            header('Location: tz.php?file='.$gamefile);
-            } 
-        else 
-        {
-            echo "Недопустимые имена!";
-        }
+
     }
     
     public function save($game)
     {
-        
+        $id = $game->id;
+        $gamers = $game->gamers;
+        $steps = $game->steps;
+        $stepsString = implode(" ", $steps);
+        file_put_contents("saved_games/" . $id, "$gamers[0]" . PHP_EOL . "$gamers[1]". PHP_EOL . $stepsString);   
     }
     
     public function load($id)
     {
-        $id = $dir . basename($_FILES['LoadBtn']['name']);
-        if (move_uploaded_file($_FILES['LoadBtn']['tmp_name'], $id))
+        $steps = [];
+        $fileContent = file_get_contents("saved_games/" . $id); 
+        $gamers = explode("\n", $fileContent);
+        if(isset($gamers[2]) && strlen($gamers[2]))
         {
-        header('Location: tz.php?file='.$id);
+            $steps = explode(" ", $gamers[2]);
         }
+        $game = new Game();
+        $game->id = $id;
+        $game->gamers = $gamers;
+        $game->steps = $steps;
+        return $game;
+
     }
 }

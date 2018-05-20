@@ -2,67 +2,44 @@
 <body>
 
 <?php
-    include 'Game.php';
+    
     include 'Repositary.php';
+    $storage = new GameStorage();
+    $id = $_GET['file'];
+    $game = $storage->load($id);
+
     
-    
-    
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Close'])){
-        header ('Location: reg_tz.php');
-    }
-    
-    if(isset($_GET['file']))
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Close']))
     {
-        $fileContent = file_get_contents("saved_games/" . $_GET['file']);
-           
-    }
-    
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['MakeAStep'])))
-    {    
-        $valuedRadio = $_POST['cell'];
-        $steps[] = $valuedRadio;
-        $stepsString = implode(" ", $steps);
-        file_put_contents("saved_games/" . $_GET['file'], "$gamers[0]" . PHP_EOL . "$gamers[1]". PHP_EOL . $stepsString);      
-    }
-    
-    
-    foreach ($steps as $index => $cell){
-        if ($index % 2 == 0){
-            $field[$cell] = 'X';
-        } else {
-            $field[$cell] = 'O';
-        }
+        header ('Location: reg_tz.php');
     }
     
 
     
-    if ($isEnded){
-        header('Location: win_tz.php?file='.$_GET['file']);
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['MakeAStep'])))
+    {    
+        $game->makeAStep($_POST['cell']);
+        $storage->save($game); 
     }
+
+    $game->updateField();
+    $isEnded = $game->isEndOfGame();
     
     
-   
-    
-    $currentGamer = $gamers[0];
-    if((count($steps)) % 2 == 0)
+    if ($isEnded)
     {
-        $currentGamer = $gamers[0];
-    }
-    else 
-    {
-        $currentGamer = $gamers[1];
+        header('Location: win_tz.php?file='.$game->id);
     }
     
     
-    
-    $rows = array_chunk($field, 3);        
+    $rows = array_chunk($game->field, 3);     
     
 ?>
     
     
 <form action="tz.php?file=<?php echo $_GET['file'] ?>" method="post">
     
-    <label for="currentGamer">Ход игрока: <?php echo $currentGamer ?></label><br><br>
+    <label for="currentGamer">Ход игрока: <?php echo $game->getCurrentGamer() ?></label><br><br>
     
     <table>
         <?php foreach($rows as $rowIndex => $row): ?>
@@ -83,8 +60,8 @@
     
     <input name="MakeAStep" type = "submit" value="Сделать ход"><br><br>
     
-    <label for="XGamer">Имя игрока X: <?php echo $gamers[0] ?></label><br><br>
-    <label for="OGamer">Имя игрока O: <?php echo $gamers[1] ?></label><br><br><br>
+    <label for="XGamer">Имя игрока X: <?php echo $game->gamers[0] ?></label><br><br>
+    <label for="OGamer">Имя игрока O: <?php echo $game->gamers[1] ?></label><br><br><br>
         
     <input name="Close" type = "submit" value="Выйти">   
 </form>
