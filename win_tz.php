@@ -1,23 +1,28 @@
 <?php 
-include_once 'Repositary.php';
+include_once 'Repository.php';
 
 $storage = new GameStorage();
 $id = $_GET['file'];
 $game = $storage->load($id);
-if(isset($game->id))
+if($game->getId())
 {   
     
-    $stepsLength = count($game->steps);
-    if ($stepsLength == 9){
-        echo "Ничья.";
-    } else if ($stepsLength % 2 == 0)
+    $stepsLength = count($game->getSteps());
+    if ($game->isEndOfGameWithWinner())
     {
-        echo $game->gamers[1]. " won";
-    } else {
-        echo $game->gamers[0]. " won";
-    } 
+        if ($stepsLength % 2 == 0)
+        {
+            echo $game->getGamers()[1]. " won";
+        }
+        else
+        {
+            echo $game->getGamers()[0]. " won";
+        }
+    }
+
+    if ($game->isEndOfGameWithDraw())
+    {
+    echo "Ничья.";
+    }
+    
 }
-//    $fileContent = file_get_contents("saved_games/" . $_GET['file']);
-//        $gamers = explode("\n", $fileContent);
-//        echo $gamers[0] . "won";      
-//    }

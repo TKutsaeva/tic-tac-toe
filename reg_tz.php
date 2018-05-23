@@ -18,7 +18,7 @@
 </html>
 
 <?php 
-    include 'Repositary.php';
+    include 'Repository.php';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['OKBtn'])))
     {
@@ -53,11 +53,7 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['OpenGameBtn'])))
     {
-//        $storage = new GameStorage();
-//        $storage->load($id);
-        
-        
-         $id = $dir . basename($_FILES['LoadBtn']['name']);
+        $id = $dir . basename($_FILES['LoadBtn']['name']);
         if (move_uploaded_file($_FILES['LoadBtn']['tmp_name'], $id))
         {
         header('Location: tz.php?file='.$id);
