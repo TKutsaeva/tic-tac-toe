@@ -47,6 +47,23 @@ class Game
         $this->field = $field;
     }
     
+	public function isValidGamersNames($XGamer, $OGamer)
+	{
+		$gamers = $this->getGamers();
+		$isValidNames = false;
+		$pattern = '/[a-zA-Zа-пр-яА-ПР-Я_]+/';
+		if(!empty($XGamer) && !empty($OGamer))
+		{
+			 if (preg_match($pattern, $XGamer) && preg_match($pattern, $OGamer))
+			 {
+				 $isValidNames = true;
+				 $this->setGamers($gamers)[0] = $XGamer;
+				 $this->setGamers($gamers)[1] = $OGamer;
+			 }
+		}
+		return $isValidNames;
+	}
+	
     public function makeAStep($cell)
     {
         $this->steps[] = $cell;
